@@ -13,5 +13,6 @@ export const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         },
     },
-
+    trustedOrigins: process.env.NODE_ENV === "development" ? undefined : ["https://*.vercel.app"],
+    trustHost: true,
 });
