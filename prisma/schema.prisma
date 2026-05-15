@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String        @unique
+  image         String?
+  createdAt     DateTime      @default(now())
+  transactions  Transaction[]
+  categories    Category[]
+  reports       Report[]
+  
+  sessions      Session[]
+  accounts      Account[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Transaction {
+  id         String          @id @default(cuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount     Decimal         @db.Decimal(12, 2)
+  type       TransactionType
+  categoryId String
+  category   Category        @relation(fields: [categoryId], references: [id])
+  note       String?
+  date       DateTime        @default(now())
+  createdAt  DateTime        @default(now())
+
+  @@index([userId, date])
+}
+
+model Category {
+  id           String          @id @default(cuid())
+  userId       String?         // null = predefined/global
+  user         User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  type         TransactionType
+  isDefault    Boolean         @default(false)
+  transactions Transaction[]
+
+  @@unique([userId, name, type])
+}
+
+model Report {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  month     Int      // 1-12
+  year      Int
+  blobUrl   String   // Vercel Blob URL
+  createdAt DateTime @default(now())
+
+  @@unique([userId, month, year])
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
