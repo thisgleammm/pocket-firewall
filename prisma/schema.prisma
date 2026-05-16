@@ -1,10 +1,12 @@
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -18,9 +20,10 @@ model User {
   transactions  Transaction[]
   categories    Category[]
   reports       Report[]
-  
   sessions      Session[]
   accounts      Account[]
+
+  @@map("user")
 }
 
 model Session {
@@ -33,6 +36,9 @@ model Session {
   userAgent String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("session")
 }
 
 model Account {
@@ -50,6 +56,9 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
 }
 
 model Verification {
@@ -59,6 +68,9 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
 
 model Transaction {
@@ -78,7 +90,7 @@ model Transaction {
 
 model Category {
   id           String          @id @default(cuid())
-  userId       String?         // null = predefined/global
+  userId       String? // null = predefined/global
   user         User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String
   type         TransactionType
@@ -92,9 +104,9 @@ model Report {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  month     Int      // 1-12
+  month     Int // 1-12
   year      Int
-  blobUrl   String   // Vercel Blob URL
+  blobUrl   String // Vercel Blob URL
   createdAt DateTime @default(now())
 
   @@unique([userId, month, year])
@@ -103,4 +115,14 @@ model Report {
 enum TransactionType {
   INCOME
   EXPENSE
+}
+
+model RateLimit {
+  id          String @id
+  key         String
+  count       Int
+  lastRequest BigInt
+
+  @@unique([key])
+  @@map("rateLimit")
 }

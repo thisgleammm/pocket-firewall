@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
+import { DashboardHeader } from "@/components/dashboard-header"
 import { Button } from "@/components/ui/button"
 import { Home, List, PieChart, Settings, Plus } from "lucide-react"
 import Link from "next/link"
@@ -22,17 +23,7 @@ export default async function DashboardLayout({
         <div className="flex min-h-screen flex-col bg-background">
             <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md px-4 py-3 flex items-center justify-between">
                 <h1 className="font-bold text-xl tracking-tight">PocketFW</h1>
-                <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-muted overflow-hidden">
-                        {session.user.image ? (
-                            <img src={session.user.image} alt={session.user.name || "User"} className="h-full w-full object-cover" />
-                        ) : (
-                            <div className="h-full w-full flex items-center justify-center bg-primary text-primary-foreground text-xs font-bold">
-                                {session.user.name?.[0] || "U"}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <DashboardHeader name={session.user.name} image={session.user.image ?? null} />
             </header>
 
             <main className="flex-1 pb-20">
