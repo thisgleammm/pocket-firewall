@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
@@ -25,7 +26,13 @@ export function DashboardHeader({ name, image }: DashboardHeaderProps) {
         <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-muted overflow-hidden">
                 {image ? (
-                    <img src={image} alt={name || "User"} className="h-full w-full object-cover" />
+                    <Image
+                        src={image}
+                        alt={name || "User"}
+                        className="h-full w-full object-cover"
+                        height={32}
+                        width={32}
+                    />
                 ) : (
                     <div className="h-full w-full flex items-center justify-center bg-primary text-primary-foreground text-xs font-bold">
                         {name?.[0] || "U"}

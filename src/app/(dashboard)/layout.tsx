@@ -1,8 +1,6 @@
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Button } from "@/components/ui/button"
+import { requireServerSession } from "@/lib/session"
 import { Home, List, PieChart, Settings, Plus } from "lucide-react"
 import Link from "next/link"
 
@@ -11,13 +9,7 @@ export default async function DashboardLayout({
 }: {
     children: React.ReactNode
 }) {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    })
-
-    if (!session) {
-        redirect("/login")
-    }
+    const session = await requireServerSession()
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
@@ -41,8 +33,10 @@ export default async function DashboardLayout({
                         <span className="text-[10px] font-medium">Transaksi</span>
                     </Link>
                     <div className="relative -top-5">
-                        <Button size="icon" className="h-14 w-14 rounded-full shadow-lg shadow-primary/20">
-                            <Plus className="h-8 w-8" />
+                        <Button asChild size="icon" className="h-14 w-14 rounded-full shadow-lg shadow-primary/20">
+                            <Link href="/transactions#new-transaction" aria-label="Tambah transaksi">
+                                <Plus className="h-8 w-8" />
+                            </Link>
                         </Button>
                     </div>
                     <Link href="/reports" className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
