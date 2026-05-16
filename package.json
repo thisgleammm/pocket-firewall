@@ -4,12 +4,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "test:unit": "node --test src/lib/finance.test.mts",
+    "test:unit": "node --test src/lib/finance.test.mts src/lib/reports.test.mts src/lib/report-notification.test.mts src/lib/pwa.test.mts",
     "db:seed": "pnpm exec prisma db seed"
   },
   "dependencies": {
@@ -38,6 +38,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "babel-loader": "8.4.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "prisma": "^6.19.3",
