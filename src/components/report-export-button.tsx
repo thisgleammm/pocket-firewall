@@ -32,10 +32,18 @@ export function ReportExportButton({
         method: "POST",
       })
 
-      const data = await response.json()
+      const data = (await response.json().catch(() => null)) as
+        | { blobUrl?: string; error?: string }
+        | null
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Gagal generate laporan")
+        throw new Error(data?.error ?? "Gagal generate laporan")
+      }
+
+      if (!data?.blobUrl) {
+        throw new Error(
+          "PDF selesai dibuat, tapi URL file tidak tersedia. Periksa konfigurasi upload Blob lalu coba lagi."
+        )
       }
 
       startTransition(() => router.refresh())
@@ -53,12 +61,20 @@ export function ReportExportButton({
 
   return (
     <div className="space-y-3">
-      <Button className="h-12 w-full sm:w-auto" disabled={isPending} onClick={handleGenerate}>
-        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />}
+      <Button
+        className="h-12 w-full sm:w-auto"
+        disabled={isPending}
+        onClick={handleGenerate}
+      >
+        {isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <ArrowUpRight className="h-4 w-4" />
+        )}
         Generate & Export PDF
       </Button>
       {error ? (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="rounded-[calc(var(--radius)+2px)] border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm leading-6 text-destructive">
           {error}
         </div>
       ) : null}

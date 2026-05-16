@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server"
 
+import { BlobUploadError, MissingBlobTokenError } from "@/lib/blob"
+import { ReportPdfGenerationError, generateAndStoreReport } from "@/lib/report-service"
 import { getRequestSession } from "@/lib/session"
-import { generateAndStoreReport } from "@/lib/report-service"
+
+export const runtime = "nodejs"
 
 function normalizeBodyMonthYear(body: unknown) {
   if (!body || typeof body !== "object") {
@@ -37,13 +40,19 @@ export async function POST(request: Request) {
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    return NextResponse.json(
+      { error: "Body request tidak valid." },
+      { status: 400 }
+    )
   }
 
   const period = normalizeBodyMonthYear(body)
 
   if (!period) {
-    return NextResponse.json({ error: "Invalid month or year" }, { status: 400 })
+    return NextResponse.json(
+      { error: "Input bulan atau tahun tidak valid." },
+      { status: 400 }
+    )
   }
 
   try {
@@ -54,9 +63,21 @@ export async function POST(request: Request) {
     )
 
     return NextResponse.json({ blobUrl: result.blobUrl })
-  } catch {
+  } catch (error) {
+    if (error instanceof MissingBlobTokenError) {
+      return NextResponse.json({ error: error.message }, { status: 503 })
+    }
+
+    if (error instanceof BlobUploadError) {
+      return NextResponse.json({ error: error.message }, { status: 502 })
+    }
+
+    if (error instanceof ReportPdfGenerationError) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
     return NextResponse.json(
-      { error: "Failed to generate report" },
+      { error: "Terjadi kesalahan saat membuat laporan." },
       { status: 500 }
     )
   }

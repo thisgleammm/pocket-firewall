@@ -95,9 +95,9 @@ export function InstallPwaBanner() {
   }
 
   return (
-    <div className="fixed inset-x-4 bottom-20 z-30 mx-auto max-w-md rounded-2xl border border-border bg-background/96 p-4 shadow-[0_20px_50px_rgba(17,17,17,0.18)] backdrop-blur">
+    <div className="fixed inset-x-4 bottom-20 z-30 mx-auto max-w-md rounded-[1.4rem] border border-border bg-card/96 p-4 shadow-[0_24px_54px_rgba(77,57,39,0.16)] backdrop-blur">
       <div className="flex items-start gap-3">
-        <div className="rounded-xl bg-primary/10 p-2 text-primary">
+        <div className="rounded-[1rem] bg-primary/12 p-2 text-primary">
           <Download className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">

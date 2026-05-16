@@ -1,11 +1,19 @@
 import { prisma } from "@/lib/db"
 import { calculateSummary, getMonthRange } from "@/lib/finance"
-import { uploadPdfReport } from "@/lib/blob"
-import { generateReportPdfBuffer } from "@/lib/pdf"
 import {
-  buildReportBlobPath,
-  buildReportDocumentData,
-} from "@/lib/reports"
+  BlobUploadError,
+  MissingBlobTokenError,
+  uploadPdfReport,
+} from "@/lib/blob"
+import { generateReportPdfBuffer } from "@/lib/pdf"
+import { buildReportBlobPath, buildReportDocumentData } from "@/lib/reports"
+
+export class ReportPdfGenerationError extends Error {
+  constructor() {
+    super("PDF laporan gagal dibuat di server. Coba generate ulang.")
+    this.name = "ReportPdfGenerationError"
+  }
+}
 
 export async function getReportForMonth(userId: string, month: number, year: number) {
   return prisma.report.findFirst({
@@ -75,9 +83,29 @@ export async function getReportSourceData(userId: string, month: number, year: n
 
 export async function generateAndStoreReport(userId: string, month: number, year: number) {
   const { report } = await getReportSourceData(userId, month, year)
-  const pdfBuffer = await generateReportPdfBuffer(report)
+  let pdfBuffer: Buffer
+
+  try {
+    pdfBuffer = await generateReportPdfBuffer(report)
+  } catch {
+    throw new ReportPdfGenerationError()
+  }
+
   const pathname = buildReportBlobPath(userId, month, year)
-  const uploaded = await uploadPdfReport(pathname, pdfBuffer)
+  let uploaded: { url: string }
+
+  try {
+    uploaded = await uploadPdfReport(pathname, pdfBuffer)
+  } catch (error) {
+    if (
+      error instanceof MissingBlobTokenError ||
+      error instanceof BlobUploadError
+    ) {
+      throw error
+    }
+
+    throw new BlobUploadError()
+  }
 
   const saved = await prisma.report.upsert({
     create: {

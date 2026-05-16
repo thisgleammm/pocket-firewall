@@ -6,52 +6,91 @@ import { Home, List, PieChart, Settings, Plus } from "lucide-react"
 import Link from "next/link"
 
 export default async function DashboardLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode
+  children: React.ReactNode
 }) {
-    const session = await requireServerSession()
+  const session = await requireServerSession()
 
-    return (
-        <div className="flex min-h-screen flex-col bg-background">
-            <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md px-4 py-3 flex items-center justify-between">
-                <h1 className="font-bold text-xl tracking-tight">PocketFW</h1>
-                <DashboardHeader name={session.user.name} image={session.user.image ?? null} />
-            </header>
-
-            <main className="flex-1 pb-20">
-                {children}
-            </main>
-
-            <InstallPwaBanner />
-
-            <nav className="fixed bottom-0 left-0 right-0 z-20 border-t bg-background/80 backdrop-blur-lg safe-area-pb">
-                <div className="flex justify-around items-center h-16 max-w-md mx-auto">
-                    <Link href="/" className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
-                        <Home className="h-6 w-6" />
-                        <span className="text-[10px] font-medium">Beranda</span>
-                    </Link>
-                    <Link href="/transactions" className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
-                        <List className="h-6 w-6" />
-                        <span className="text-[10px] font-medium">Transaksi</span>
-                    </Link>
-                    <div className="relative -top-5">
-                        <Button asChild size="icon" className="h-14 w-14 rounded-full shadow-lg shadow-primary/20">
-                            <Link href="/transactions#new-transaction" aria-label="Tambah transaksi">
-                                <Plus className="h-8 w-8" />
-                            </Link>
-                        </Button>
-                    </div>
-                    <Link href="/reports" className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
-                        <PieChart className="h-6 w-6" />
-                        <span className="text-[10px] font-medium">Laporan</span>
-                    </Link>
-                    <Link href="/categories" className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
-                        <Settings className="h-6 w-6" />
-                        <span className="text-[10px] font-medium">Kategori</span>
-                    </Link>
-                </div>
-            </nav>
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="sticky top-0 z-10 border-b border-border/80 bg-background/88 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Utility ledger
+            </p>
+            <h1 className="text-xl font-black tracking-tight text-foreground">
+              PocketFW
+            </h1>
+          </div>
+          <DashboardHeader
+            name={session.user.name}
+            image={session.user.image ?? null}
+          />
         </div>
-    )
+      </header>
+
+      <main className="mx-auto flex w-full max-w-5xl flex-1 pb-24">
+        <div className="w-full">{children}</div>
+      </main>
+
+      <InstallPwaBanner />
+
+      <nav className="fixed inset-x-0 bottom-0 z-20 bg-transparent px-3 pb-3 safe-area-pb">
+        <div className="mx-auto flex h-[4.6rem] max-w-md items-center justify-around rounded-[1.6rem] border border-border/80 bg-card/94 px-2 shadow-[0_24px_60px_rgba(77,57,39,0.16)] backdrop-blur-xl">
+          <Link
+            href="/"
+            className="flex min-w-0 flex-1 flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Home className="h-5 w-5" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em]">
+              Beranda
+            </span>
+          </Link>
+          <Link
+            href="/transactions"
+            className="flex min-w-0 flex-1 flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <List className="h-5 w-5" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em]">
+              Transaksi
+            </span>
+          </Link>
+          <div className="relative -top-5">
+            <Button
+              asChild
+              size="icon"
+              className="h-14 w-14 rounded-[1.25rem] shadow-[0_18px_40px_rgba(145,70,29,0.24)]"
+            >
+              <Link
+                href="/transactions#new-transaction"
+                aria-label="Tambah transaksi"
+              >
+                <Plus className="h-7 w-7" />
+              </Link>
+            </Button>
+          </div>
+          <Link
+            href="/reports"
+            className="flex min-w-0 flex-1 flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <PieChart className="h-5 w-5" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em]">
+              Laporan
+            </span>
+          </Link>
+          <Link
+            href="/categories"
+            className="flex min-w-0 flex-1 flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Settings className="h-5 w-5" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em]">
+              Kategori
+            </span>
+          </Link>
+        </div>
+      </nav>
+    </div>
+  )
 }

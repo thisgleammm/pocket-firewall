@@ -2,6 +2,11 @@ export const TRANSACTION_TYPES = ["INCOME", "EXPENSE"] as const
 
 export type TransactionTypeValue = (typeof TRANSACTION_TYPES)[number]
 
+export interface MonthYearPeriod {
+  month: number
+  year: number
+}
+
 export const DEFAULT_CATEGORY_NAMES: Record<TransactionTypeValue, string[]> = {
   EXPENSE: ["Makan", "Transport", "Kesehatan", "Belanja", "Hiburan", "Tagihan", "Lainnya"],
   INCOME: ["Gaji", "Freelance", "Investasi", "Lainnya"],
@@ -48,7 +53,7 @@ export function normalizeMonthYear(
   monthValue: string | null,
   yearValue: string | null,
   fallbackDate = new Date()
-) {
+): MonthYearPeriod | null {
   if (!monthValue || !yearValue) {
     return {
       month: fallbackDate.getUTCMonth() + 1,
@@ -68,6 +73,39 @@ export function normalizeMonthYear(
   }
 
   return { month, year }
+}
+
+export function compareMonthYear(
+  left: MonthYearPeriod,
+  right: MonthYearPeriod
+) {
+  if (left.year !== right.year) {
+    return left.year < right.year ? -1 : 1
+  }
+
+  if (left.month === right.month) {
+    return 0
+  }
+
+  return left.month < right.month ? -1 : 1
+}
+
+export function clampMonthYearToMax(
+  period: MonthYearPeriod,
+  maxPeriod: MonthYearPeriod
+) {
+  return compareMonthYear(period, maxPeriod) > 0 ? maxPeriod : period
+}
+
+export function shiftMonthYear(period: MonthYearPeriod, offset: number) {
+  const shifted = new Date(
+    Date.UTC(period.year, period.month - 1 + offset, 1)
+  )
+
+  return {
+    month: shifted.getUTCMonth() + 1,
+    year: shifted.getUTCFullYear(),
+  }
 }
 
 export function getMonthRange(month: number, year: number) {

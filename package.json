@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "test:unit": "node --test src/lib/finance.test.mts src/lib/reports.test.mts src/lib/report-notification.test.mts src/lib/pwa.test.mts",
+    "test:unit": "node --test src/lib/finance.test.mts src/lib/blob.test.mts src/lib/reports.test.mts src/lib/report-notification.test.mts src/lib/pwa.test.mts",
     "db:seed": "pnpm exec prisma db seed"
   },
   "dependencies": {

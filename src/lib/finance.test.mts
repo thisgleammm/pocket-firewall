@@ -4,9 +4,12 @@ import test from "node:test"
 import {
   buildSixMonthChartSeries,
   calculateSummary,
+  clampMonthYearToMax,
   DEFAULT_CATEGORY_NAMES,
+  compareMonthYear,
   getMonthRange,
   parseAmountInput,
+  shiftMonthYear,
 } from "./finance.ts"
 
 test("parseAmountInput parses positive numeric strings", () => {
@@ -22,6 +25,41 @@ test("getMonthRange returns inclusive start and exclusive end", () => {
 
   assert.equal(start.toISOString(), "2026-02-01T00:00:00.000Z")
   assert.equal(end.toISOString(), "2026-03-01T00:00:00.000Z")
+})
+
+test("shiftMonthYear handles previous and next month across year boundaries", () => {
+  assert.deepEqual(shiftMonthYear({ month: 1, year: 2026 }, -1), {
+    month: 12,
+    year: 2025,
+  })
+  assert.deepEqual(shiftMonthYear({ month: 12, year: 2026 }, 1), {
+    month: 1,
+    year: 2027,
+  })
+})
+
+test("compareMonthYear orders periods correctly", () => {
+  assert.equal(compareMonthYear({ month: 5, year: 2026 }, { month: 5, year: 2026 }), 0)
+  assert.equal(compareMonthYear({ month: 4, year: 2026 }, { month: 5, year: 2026 }), -1)
+  assert.equal(compareMonthYear({ month: 6, year: 2026 }, { month: 5, year: 2026 }), 1)
+  assert.equal(compareMonthYear({ month: 12, year: 2025 }, { month: 1, year: 2026 }), -1)
+})
+
+test("clampMonthYearToMax caps future periods to the latest allowed month", () => {
+  assert.deepEqual(
+    clampMonthYearToMax(
+      { month: 8, year: 2026 },
+      { month: 5, year: 2026 }
+    ),
+    { month: 5, year: 2026 }
+  )
+  assert.deepEqual(
+    clampMonthYearToMax(
+      { month: 4, year: 2026 },
+      { month: 5, year: 2026 }
+    ),
+    { month: 4, year: 2026 }
+  )
 })
 
 test("calculateSummary totals income, expense, balance, and category groups", () => {

@@ -9,8 +9,10 @@ import {
   Fingerprint,
   Globe,
   Loader2,
+  LogIn,
   ScanLine,
   Shield,
+  UserPlus,
   WalletCards,
 } from "lucide-react"
 
@@ -291,18 +293,20 @@ export default function LoginPage() {
             <Tabs value={tab} onValueChange={(nextValue) => setTab(nextValue === "signup" ? "signup" : "login")} className="gap-5">
               <TabsList
                 variant="default"
-                className="grid h-auto w-full grid-cols-2 rounded-[1.45rem] border border-white/8 bg-white/[0.05] p-1.5"
+                className="grid min-h-14 w-full grid-cols-2 rounded-[1.45rem] border border-white/10 bg-[#1b1b1b] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
               >
                 <TabsTrigger
                   value="login"
-                  className="h-12 rounded-[1rem] text-[15px] font-semibold text-white/62 data-active:bg-[#f3e4ce] data-active:text-[#111111]"
+                  className="h-12 gap-2 rounded-[1rem] border border-transparent text-[15px] font-semibold text-white/56 data-active:border-black/5 data-active:bg-[#f3e4ce] data-active:text-[#111111] data-active:shadow-[0_10px_24px_rgba(0,0,0,0.12)] focus-visible:ring-[#f16d3b]/35"
                 >
+                  <LogIn className="h-4 w-4" />
                   Masuk
                 </TabsTrigger>
                 <TabsTrigger
                   value="signup"
-                  className="h-12 rounded-[1rem] text-[15px] font-semibold text-white/62 data-active:bg-[#f3e4ce] data-active:text-[#111111]"
+                  className="h-12 gap-2 rounded-[1rem] border border-transparent text-[15px] font-semibold text-white/56 data-active:border-black/5 data-active:bg-[#f3e4ce] data-active:text-[#111111] data-active:shadow-[0_10px_24px_rgba(0,0,0,0.12)] focus-visible:ring-[#f16d3b]/35"
                 >
+                  <UserPlus className="h-4 w-4" />
                   Daftar
                 </TabsTrigger>
               </TabsList>
